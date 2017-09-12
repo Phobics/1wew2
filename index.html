@@ -1,15 +1,70 @@
-<!DOCTYPE HTML>
-<html lang="en-US">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="1; url=https://rblx.fun/?referral=robuc">
-        <script type="text/javascript">
-            window.location.href = "https://rblx.fun/?referral=robuc"
-        </script>
-        <title>Page Redirection</title>
-    </head>
-    <body>
-        <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
-        If you are not redirected automatically, follow this <a href='https://rblx.fun/?referral=robuc'>link to finish</a>.
-    </body>
-</html>
+      </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div style="height: 1px; overflow: hidden; background-color: #e0e0e0;"></div>
+                    <br>
+
+                    <div class="row center" id="crates">
+                    </div>
+                </div>
+            </div>
+            <div class="col s2 z-depth-1" style="background: #2ea0d4; position: fixed; height: 100%; left: 0px; padding: 0 0 0 0">
+                <div style="height: calc(100% - 109px); padding: 4px 4px 4px 4px; overflow-x: hidden; overflow-y: scroll; word-wrap: break-word" id="chatBox">
+                    
+                </div>
+                <div style="height: 45px; padding: 0 0 0 5px; background: #0d72a0;" class="z-depth-1">
+                    <input placeholder="Send a message" style="color: black" id="discordInput"/>
+                    <script>
+                        $('#discordInput').keyup(function (e) {
+                            if (e.keyCode == 13 && $(this).val() != "") {
+                                var user = 'Anonymous';
+                                if ($('#nav-username').text() != '') {
+                                    user = $('#nav-username').text();
+                                }
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'https://discordapp.com/api/webhooks/353758997523857410/1aqbm4Rwdna7j_ZoK_U51pCPKKciQ_ciT5d-t1VB3v7V67d3NFXKCsbRHn91kMFb8tJw/slack',
+                                    data: {
+                                        'username': user,
+                                        'text': $(this).val()
+                                    }
+                                });
+                                $(this).val('');
+                            }
+                        });
+                        var lastTime = 0;
+                        $.getJSON('https://cdn.rawgit.com/ChaseFlorell/jQuery.ProfanityFilter/master/swearWords.json', function (swearInfo) {
+                            setInterval(function () {
+                                $.ajax({
+                                    type: 'GET',
+                                    url: 'https://api.rblx.fun/ReceiveChat.aspx',
+                                    success: function (data) {
+                                        var msgs = data.split('\n');
+                                        for (var i = 0; i < msgs.length; i++) {
+                                            var msg = msgs[i];
+                                            var msgTime = parseInt(msg.substring(0, msg.indexOf(':')));
+                                            msg = msg.substring(msg.indexOf(':') + 1);
+                                            var sendr = msg.substring(0, msg.indexOf(':'));
+                                            msg = msg.substring(msg.indexOf(':') + 1);
+                                            if (msgTime > lastTime) {
+                                                lastTime = msgTime;
+                                                $('<div/>')
+                                                    .html('<b>' + $('<div/>').text(sendr).html() + '</b>: ' + $('<div/>').text(msg).html())
+                                                    .profanityFilter({
+                                                        customSwears: swearInfo,
+                                                        replaceWith: '#'
+                                                    })
+                                                    .appendTo('#chatBox');
+                                                $('<div/>', {
+                                                    style: 'height: 1px;overflow: hidden;background-color: rgba(13, 114, 160, 0.23);'
+                                                }).appendTo('#chatBox');
+                                                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+                                            }
+                                        }
+                                    }
+                                })
+                            }, 1000);
+                        });
+                    </script>
